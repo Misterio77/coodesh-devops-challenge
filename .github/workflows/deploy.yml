@@ -1,0 +1,62 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  
+env:
+  DOMAIN: c.m7.rs
+  ZONE_ID: Z101355732EEVT4NYLGFK
+  AWS_DEFAULT_REGION: 'us-east-1'
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  infra:
+    outputs:
+      s3_name: ${{ steps.apply.outputs.s3_bucket_name }}
+      cf_id: ${{ steps.apply.outputs.s3_bucket_name }}
+    steps:
+    - uses: hashicorp/setup-terraform@v2
+    - uses: actions/checkout@v2
+    - run: terraform init
+      working-directory: ./infra-terraform
+    - run: terraform import aws_route53_zone.main $ZONE_ID
+      working-directory: ./infra-terraform
+    - run: terraform apply -auto-approve -var="domain=$DOMAIN"
+      working-directory: ./infra-terraform
+      id: apply
+
+  build:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - run: npm install-clean
+      working-directory: ./calculadora
+    - run: npm run build
+      working-directory: ./calculadora
+    - uses: actions/upload-artifact@v2
+      with:
+        name: app-build
+        path: calculadora/build
+
+  deploy:
+    needs: [infra, build]
+    - uses: actions/download-artifact@master
+      with:
+        name: app-build
+        path: build
+    - name: Uploadar app no Bucket S3
+      run: |
+        aws s3 sync ./build/ s3://${{needs.infra.outputs.s3_name}} \
+          --cache-control max-age=604800 \
+          --acl public-read \
+          --delete
+    - name: Invalidar cache do cloudfront
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{needs.infra.outputs.cf_id}} \
+          --paths "/index.html"
+
