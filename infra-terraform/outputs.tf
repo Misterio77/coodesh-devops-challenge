@@ -1,8 +1,8 @@
-output "s3_bucket_name" {
-  description = "ID da distribution. Útil para deploy."
+output "s3_name" {
+  description = "Nome do Bucket. Útil para deploy."
   value       = aws_s3_bucket.calculator.bucket
 }
-output "cloudfront_distribution_id" {
+output "cf_id" {
   description = "ID da distribution. Útil para deploy."
   value       = aws_cloudfront_distribution.calculator.id
 }

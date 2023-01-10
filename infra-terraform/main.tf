@@ -1,5 +1,11 @@
 terraform {
   required_version = ">= 1.1.0"
+  cloud {
+    organization = "devops-challenge-coodesh"
+    workspaces {
+      name = "challenge"
+    }
+  }
 
   required_providers {
     aws = {
