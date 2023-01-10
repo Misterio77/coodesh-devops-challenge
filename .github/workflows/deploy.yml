@@ -30,6 +30,7 @@ jobs:
       id: apply
 
   build:
+    steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v3
       with:
@@ -45,6 +46,7 @@ jobs:
 
   deploy:
     needs: [infra, build]
+    steps:
     - uses: actions/download-artifact@master
       with:
         name: app-build
