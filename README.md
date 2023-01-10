@@ -23,40 +23,58 @@ nescessário para a implantação:
 - Provisionamento de SSL via Let's Encrypt com challenge DNS
 
 Tudo que você precisa é de: uma conta da AWS e um domínio (ou subdomínio).
+Primeiro, obtenha a chave de acesso de um usuário (pode ser do root) da sua
+conta.
 
 #### Passo a passo (github actions)
 
 Temos pipeline pronto para automatizar infra e build.
 
-No seu repositório, adicione suas credenciais da AWS como secrets
-(`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). Você também precisará de uma
-workspace no terraform cloud (apenas para sincronizar estado); crie uma, gere
-um token, e adicione como secret (`TF_API_TOKEN`).
+No seu repositório, vá em secrets e adicione suas credenciais da AWS
+(`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). Edite o
+`.github/workflows/deploy.yml` e coloque seu domínio.
 
-Edite o `.github/workflows/deploy.yml`` e coloque seu domínio, ID do conjunto
-de nameservers, e nome da organização e workspace no tf cloud.
+Pronto! A workflow também inclui ações para construir e implantar a aplicação.
 
 #### Passo a Passo (manual)
 
-Obtenha a chave de acesso (pode ser do root) da sua conta, baixe o AWS CLI, e
-execute o script `./nameservers.sh`. Você receberá um ID e conjunto de NS,
-configure seu (sub)dominio com eles. Caso esqueça, basta rodar o script
-novamente (ele irá pegar o conjunto que já existe).
+Para fazer manualmente, você precisa ter instalado:
 
-Feito isso, depois de propagar o DNS, baixe o Terraform. Basta usar `terraform
-init` e `terraform apply`. Será pedido o ID do conjunto de nameservers que você
-criou e o seu (sub)domínio.
+- [Terraform](https://developer.hashicorp.com/terraform/downloads)
+- [AWS CLI](https://aws.amazon.com/cli/)
+- [jq](https://stedolan.github.io/jq/)
 
-Depois de subir tudo, o terraform te informará o nome do bucket e o id do
-cloudfront.
+> Um jeito prático é usar a nossa `shell.nix`. Basta instalar o gerenciador de
+> pacotes [nix](https://nixos.org/download.html) (funciona em qualquer Linux,
+> Mac, ou WSL) e rodar `nix-shell`. Você entrará numa shell com tudo que precisa.
 
-Uploade a aplicação no s3 com:
+Dentro do diretório `infra-terraform`, comece executando o script de setup
+inicial:
 ```
-aws s3 sync ./calculadora/build/ s3://nome-do-bucket --acl public-read --delete
+./initial_setup.sh
+```
+Esse script provisionará um S3 (usado para guardar estado do terraform) e um
+DNS Zone pro seu domínio. Será exibido um conjunto de Nameservers, configure
+seu domínio com eles.
+
+Feito isso, suba o resto da infraestrutura:
+```
+terraform apply
 ```
 
-Caso nescessário, você pode invalidar o cache (só o index.html importa, já que
-a aplicação já usa hash pra cache busting no js e css) do cloudfront:
+> Vale notar que o S3 de estado e a Zone criados imperativamente são
+> automaticamente importados no terraform. Sendo assim, serão gerenciados por
+> ele (incluindo deleção, alterações futuras, etc).
+
+Depois de subir tudo, o terraform te informará o nome do bucket e o id da
+instância de cloudfront da aplicação. Você já pode fazer deploy:
+
 ```
-aws cloudfront create-invalidation --distribution-id id-do-cloudfront --paths "/index.html"
+aws s3 sync ../calculadora/build/ s3://NOME-DO-BUCKET --acl public-read --delete
+```
+
+Para que as mudanças sejam visíveis logo, você pode invalidar o cache (só do
+index.html, já que os outros assets fazem cache busting) do cloudfront:
+```
+aws cloudfront create-invalidation --distribution-id ID-DO-CLOUDFRONT --paths "/index.html"
 ```
