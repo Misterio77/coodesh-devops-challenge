@@ -5,14 +5,15 @@ Observações e problemas que tive durante o processo.
 ## Parte 1 (Build)
 
 - A versão do node com o qual esse app foi empacotado é muito muito antiga.
-    - Lock File version é 1, indicativo do Node 14
     - Tão antiga que eu tenho erro com SSL se eu usar Node 17+
-        - Isso é corrigível passando `NODE_OPTIONS=--openssl-legacy-provider`
-    - Usando o [nix](https://nixos.org), é muito fácil trocar entre as versões,
-      então constatei que funciona sem alterações no Node 14.
+    - Lock File version é 1, indicativo do Node 14
+    - Isso é corrigível passando `NODE_OPTIONS=--openssl-legacy-provider`
     - Acho usar o Node 14 ou OpenSSL legado péssimas idéias, então resolvi
       atualizar para funcionar com o 18.
       - Um simples `npm audit --force` resolveu.
+
+- O `homepage` do `package.json` não é uma raíz, logo o script pensa que deve
+    buildar o app tendo em mente esse subdiretório. Corrigi isso.
 
 O output é apenas assets estáticos, então não faz sentido dockerizar. Existe
 quem use docker como build tool (abusando de volumes pra acessar output); eu
