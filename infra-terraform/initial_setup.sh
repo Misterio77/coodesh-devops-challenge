@@ -8,8 +8,11 @@ if ! command -v aws > /dev/null; then
     echo "Esse script requer a AWS CLI" >&2
     exit 1
 fi
-
-if ! command -v aws > /dev/null; then
+if ! command -v terraform > /dev/null; then
+    echo "Esse script requer o terraform" >&2
+    exit 1
+fi
+if ! command -v jq > /dev/null; then
     echo "Esse script requer o jq" >&2
     exit 1
 fi
@@ -50,5 +53,7 @@ fi
 bucket_name="$(echo "$bucket" | jq -er '.Name')"
 
 terraform init -backend-config "bucket=$bucket_name"
-terraform import -var "domain=$domain" aws_route53_zone.main "$zone_id" || true
-terraform import -var "domain=$domain" aws_s3_bucket.tfstate "$bucket_name" || true
+terraform state rm aws_route53_zone.main &> /dev/null || true
+terraform import -var "domain=$domain" aws_route53_zone.main "$zone_id"
+terraform state rm aws_s3_bucket.tfstate &> /dev/null || true
+terraform import -var "domain=$domain" aws_s3_bucket.tfstate "$bucket_name"
