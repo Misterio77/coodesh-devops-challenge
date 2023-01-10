@@ -78,3 +78,37 @@ index.html, já que os outros assets fazem cache busting) do cloudfront:
 ```
 aws cloudfront create-invalidation --distribution-id ID-DO-CLOUDFRONT --paths "/index.html"
 ```
+
+# Extras
+
+## Diferencial 1 - Desenhar o fluxo de CI/CD
+
+É pra ser um diagrama?
+
+Etapa 1, build:
+```
+[ npm install ] ─► [ npm run build ]
+```
+
+Etapa 2, infra:
+```
+[ Criar Route 53 zone ] ─────┬─► [ Inicializar estado TF no S3 ] ─► [ Importar S3 e Route 53 para estado ] ─► [ Aplicar configuração declarativa (S3 e CloudFront) ]
+[ Criar S3 para estado TF ] ─┘
+```
+
+Etapa 3, deploy:
+```
+[ Artefato da build ] ──────┬─► [ Uploadar build p/ S3 ] ─► [ Invalidar cache do CloudFront ]
+[ IDs do S3 e CloudFront ] ─┘
+```
+
+## Diferencial 2 - Configurar o fluxo de CI/CD com a criação do sistema de storage usando IaC
+
+Tem alguma outra infraestrutura pra criar além da storage? Achei que fosse
+parte do desafio em si. Bem, está feito.
+
+## Diferencial 3 - Configurar modules para re-aproveitar código do IaC
+
+Sinceramente, não julgo nescessário. A infra é tão simples que não tem nada que
+vale a pena abstrair ou reusar. Se eu abstrair, por exemplo, o S3, vai ficar
+mais complexo e não adicionar nenhuma vantagem.
