@@ -8,8 +8,8 @@ on:
 env:
   # Configure qual domínio usar
   DOMAIN: c.m7.rs
-  # Coloque o ID da zona já criada na AWS
-  ZONE_ID: Z101355732EEVT4NYLGFK
+  # Coloque o ID do nameserver delegation set (obtenha-o com ./nameservers.sh)
+  DELEGATION_SET: N0037094IFUVTBLVH6ZD
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -24,11 +24,7 @@ jobs:
     - uses: actions/checkout@v2
     - run: terraform init
       working-directory: ./infra-terraform
-    - run: terraform import aws_route53_zone.main $ZONE_ID
-      working-directory: ./infra-terraform
-    - run: terraform refresh
-      working-directory: ./infra-terraform
-    - run: terraform apply -auto-approve -var="domain=$DOMAIN"
+    - run: terraform apply -auto-approve -var="domain=$DOMAIN" -var="delegation_set=$DELEGATION_SET"
       working-directory: ./infra-terraform
       id: apply
 
