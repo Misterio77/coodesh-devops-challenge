@@ -36,7 +36,12 @@ No seu repositório, vá em secrets e adicione suas credenciais da AWS
 (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`). Edite o
 `.github/workflows/deploy.yml` e coloque seu domínio.
 
-Pronto! A workflow também inclui ações para construir e implantar a aplicação.
+Pronto, basta executar a workflow! No job "infra", no passo "Run initial
+terraform setup", você terá o output dos nameservers para o seu domínio, que
+deve ser configurado na sua registrar. Caso o DNS demore pra propagar a build
+pode falhar, nesse caso basta executá-la novamente.
+
+Além do trigger manual, a workflow roda automaticamente a cada push na main.
 
 #### Passo a Passo (manual)
 
