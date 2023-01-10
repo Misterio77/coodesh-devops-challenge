@@ -13,3 +13,31 @@ Observações e problemas que passei no processo.
     - Acho usar o Node 14 ou OpenSSL legado péssimas idéias, então resolvi
       atualizar para funcionar com o 18.
       - Um simples `npm audit --force` resolveu.
+
+- O output é apenas assets estáticos, então não faz sentido dockerizar. Existe
+    quem use docker como build tool (abusando de volumes pra acessar output);
+    eu não gosto dessa prática.
+
+## Parte 2 (deploy)
+
+Decidi fazer o deploy na AWS via Terraform. A melhor forma, até onde sei, de
+servir assets estáticos é S3 + CloudFront (SSL termination, CDN, etc).
+
+Fiz a infra completa incluindo zone no Route53 e provisionamento de SSL pelo
+Let's Encrypt.
+
+Existe um problema comum de se adicionar o domínio pelo terraform pois DNS
+demora pra propagar, causando erros ao gerar o certificado até que propague.
+Pra resolver isso, eu fiz um script que gera um nameserver delegation set, isto
+é, obtém o conjunto de nameservers antes de subir a infra. Depois disso, basta
+passar esse ID para o terraform pra garantir que o zone suba com esses
+nameservers.
+
+O jeito mais fácil de automatizar deploy com terraform é usando o remote apply
+do terraform cloud, mas optei por não fazer isso pra evitar que seja
+obrigatório usar ele. Contudo, o terraform é inviável de usar sem sincronizar
+state, então fiz um script para criar um S3 pra isso antes da infra.
+
+Tanto os delegation sets quanto esse S3 também estão geridos pelo terraform;
+então depois de criá-los imperativamente no setup inicial, é só importar no
+terraform e eles passarão a ser gerenciados.
