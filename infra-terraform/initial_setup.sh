@@ -52,8 +52,11 @@ if [ -z "${bucket:-}" ]; then
 fi
 bucket_name="$(echo "$bucket" | jq -er '.Name')"
 
-terraform init -backend-config "bucket=$bucket_name"
+terraform init -backend-config "bucket=$bucket_name" >&2
 terraform state rm aws_route53_zone.main &> /dev/null || true
-terraform import -var "domain=$domain" aws_route53_zone.main "$zone_id"
+terraform import -var "domain=$domain" aws_route53_zone.main "$zone_id" >&2
 terraform state rm aws_s3_bucket.tfstate &> /dev/null || true
-terraform import -var "domain=$domain" aws_s3_bucket.tfstate "$bucket_name"
+terraform import -var "domain=$domain" aws_s3_bucket.tfstate "$bucket_name" >&2
+
+echo "Configure seu domínio com os seguintes nameservers:" >&2
+aws route53 get-hosted-zone --id "$zone_id" | jq -r '.DelegationSet.NameServers | join("\n")'
