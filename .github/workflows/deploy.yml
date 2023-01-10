@@ -26,6 +26,8 @@ jobs:
       working-directory: ./infra-terraform
     - run: terraform import aws_route53_zone.main $ZONE_ID
       working-directory: ./infra-terraform
+    - run: terraform refresh
+      working-directory: ./infra-terraform
     - run: terraform apply -auto-approve -var="domain=$DOMAIN"
       working-directory: ./infra-terraform
       id: apply
