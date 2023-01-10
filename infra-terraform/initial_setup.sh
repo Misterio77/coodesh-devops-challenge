@@ -50,5 +50,5 @@ fi
 bucket_name="$(echo "$bucket" | jq -er '.Name')"
 
 terraform init -backend-config "bucket=$bucket_name"
-terraform import -var "domain=$domain" aws_route53_zone.main "$zone_id"
-terraform import -var "domain=$domain" aws_s3_bucket.tfstate "$bucket_name"
+terraform import -var "domain=$domain" aws_route53_zone.main "$zone_id" || true
+terraform import -var "domain=$domain" aws_s3_bucket.tfstate "$bucket_name" || true
