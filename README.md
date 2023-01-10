@@ -1,4 +1,4 @@
-# Challenge DevOps Coodesh
+# Challenge DevOps Coodesh (20221219)
 
 Esse repositório implementa infra e CI/CD para o [Calculator
 React](https://github.com/ahfarmer/calculator).
