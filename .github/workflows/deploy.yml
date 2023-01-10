@@ -8,8 +8,6 @@ on:
 env:
   # Configure qual domínio usar
   DOMAIN: c.m7.rs
-  # Coloque o ID do nameserver delegation set (obtenha-o com ./nameservers.sh)
-  DELEGATION_SET: N0037094IFUVTBLVH6ZD
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: us-east-1
