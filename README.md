@@ -22,6 +22,8 @@ nescessário para a implantação:
 - DNS zone e record no route53
 - Provisionamento de SSL via Let's Encrypt com challenge DNS
 
+Esses recursos somam custo 0, caso você esteja no free tier de 12 meses da AWS.
+
 Tudo que você precisa é de: uma conta da AWS e um domínio (ou subdomínio).
 Primeiro, obtenha a chave de acesso de um usuário (pode ser do root) da sua
 conta.
