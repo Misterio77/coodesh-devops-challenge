@@ -6,9 +6,10 @@ on:
   workflow_dispatch:
   
 env:
+  # Configure qual domínio usar
   DOMAIN: c.m7.rs
+  # Coloque o ID da zona já criada na AWS
   ZONE_ID: Z101355732EEVT4NYLGFK
-  AWS_DEFAULT_REGION: 'us-east-1'
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
