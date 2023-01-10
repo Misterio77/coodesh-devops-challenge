@@ -1,3 +1,6 @@
+# Para guardar state do terraform
+resource "aws_s3_bucket" "tfstate" {}
+
 # O bucket propriamente dito
 resource "aws_s3_bucket" "calculator" {
   # Eu gosto de usar o domínio como "namespace"

@@ -35,9 +35,8 @@ nameservers.
 
 O jeito mais fácil de automatizar deploy com terraform é usando o remote apply
 do terraform cloud, mas optei por não fazer isso pra evitar que seja
-obrigatório usar ele. Contudo, o terraform é inviável de usar sem sincronizar
-state, então fiz um script para criar um S3 pra isso antes da infra.
+obrigatório usar ele. Contudo, o terraform é inviável de usar sem
+persistir/sincronizar state, então, no caso da pipeline, fiz rodar com o tf
+cloud (apenas para sincronizar estado, sem remote run).
 
-Tanto os delegation sets quanto esse S3 também estão geridos pelo terraform;
-então depois de criá-los imperativamente no setup inicial, é só importar no
-terraform e eles passarão a ser gerenciados.
+Numa situação de produção, eu preferiria usar o terraform cloud.

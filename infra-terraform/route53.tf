@@ -1,6 +1,5 @@
 resource "aws_route53_zone" "main" {
-  name              = var.domain
-  delegation_set_id = var.delegation_set
+  name = var.domain
 }
 
 resource "aws_route53_record" "apex" {

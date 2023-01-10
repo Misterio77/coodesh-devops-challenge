@@ -1,4 +1,0 @@
-- rodar testes no ci
-- usar s3 ao inves de tf cloud
-- script de setup inicial
-    - dominio e s3

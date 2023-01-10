@@ -22,13 +22,12 @@ jobs:
       cf_id: ${{ steps.outputs.outputs.cf_id }}
     steps:
     - uses: hashicorp/setup-terraform@v2
-      with:
-        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
     - uses: actions/checkout@v2
-    - run: terraform init
+    - name: Run initial terraform setup
       working-directory: ./infra-terraform
+      run: ./initial_setup.sh "$DOMAIN"
     - name: Run terraform apply
-      run: terraform apply -auto-approve -var="domain=$DOMAIN" -var="delegation_set=$DELEGATION_SET"
+      run: terraform apply -auto-approve -var "domain=$DOMAIN"
       working-directory: ./infra-terraform
     - name: Set terraform outputs
       id: outputs

@@ -1,10 +1,8 @@
 terraform {
   required_version = ">= 1.1.0"
-  cloud {
-    organization = "devops-challenge-coodesh"
-    workspaces {
-      name = "challenge"
-    }
+  backend "s3" {
+    key    = "terraform.tfstate"
+    region = "us-east-1"
   }
 
   required_providers {
@@ -33,3 +31,6 @@ provider "aws" {
 provider "acme" {
   server_url = "https://acme-v02.api.letsencrypt.org/directory"
 }
+
+# Bucket para state do terraform
+resource "aws_s3_bucket" "tf_state" {}
